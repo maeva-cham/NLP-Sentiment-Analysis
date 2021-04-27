@@ -1,0 +1,57 @@
+import os
+import nltk
+import datetime
+import re
+import sys
+import datetime
+
+from os import walk
+from bs4 import BeautifulSoup
+from datetime import datetime
+import requests
+import pandas as pd
+
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import sent_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
+from nltk import word_tokenize, pos_tag
+
+
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn import model_selection, naive_bayes
+from sklearn.metrics import accuracy_score
+
+# Creation of the dataframe¶
+
+path = 'presidents-speeches/'
+
+list_ = []
+                        
+def general_extract_datas():
+    for (root, dirs, files) in walk(path):
+        if len(dirs) == 1:
+            path2 = root + '/'
+            for (root2, dirs2, files2) in walk(path2):
+                speech = []
+                extract_president_speech_date(files2, root, root2)
+                    
+def extract_president_speech_date(files2, root, root2): 
+    for i in range(0,len(files2)):
+                    dic = {}
+                    if files2[i] != 'initial.txt':
+                        president_name = root.split("/")[1]
+                        dic['president name'] = president_name
+                        file_path = "{}/{}".format(root2,files2[i])
+                        date1 = files2[i].replace('__', ' ')
+                        date2 = date1.rsplit(' ', 1)[0]
+                        dic['date'] = datetime.strptime(date2, "%B %d, %Y").strftime("%Y/%m/%d")
+                        with open(file_path) as file:
+                            data = file.readlines()[0].lower().replace('\\n','').lstrip('b')
+                            dic['speech'] = data
+                            list_.append(dic)
+                    
+general_extract_datas()
+
